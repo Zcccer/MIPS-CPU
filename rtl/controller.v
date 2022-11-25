@@ -24,8 +24,7 @@ module controller(
 	.jump(jump),
 	.aluop(aluop)
     );
-	aludec ad(funct,aluop,alucontrol);
-    aludec(
+    aludec dc(
 	.funct(funct),
 	.aluop(aluop),
 	.alucontrol(alucontrol)

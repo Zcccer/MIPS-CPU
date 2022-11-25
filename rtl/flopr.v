@@ -2,7 +2,7 @@
 
 // pc unit
 
-module fplor #(parameter WIDTH = 8)(
+module flopr #(parameter WIDTH = 8)(
 	input wire clk,rst,
 	input wire[WIDTH-1:0] d,
 	output reg[WIDTH-1:0] q
