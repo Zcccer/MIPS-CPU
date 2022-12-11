@@ -45,21 +45,23 @@ module datapath(
 
     //IF-ID
     wire[31:0] pcplus4D;
+	wire pcsrcD_flush;
+	assign pcsrcD_flush = pcsrcD | jump;
 
     flop_encl #(32) instr_D(
 	.clk(clk),
 	.rst(rst),
 	.en(~stallD),
-	.clear(pcsrcD),
+	.clear(pcsrcD_flush),
 	.in(instr),
 	.out(instrD)
     );
-
+    
     flop_encl #(32) pcplus4_D(
 	.clk(clk),
 	.rst(rst),
 	.en(~stallD),
-	.clear(pcsrcD),
+	.clear(pcsrcD_flush),
 	.in(pcplus4F),
 	.out(pcplus4D)
     );
@@ -68,6 +70,7 @@ module datapath(
 	//ID
 	wire[31:0] equal1D,equal2D,srcaD,writedataD,signimmD,signimmD_leftshift,resultW;
     wire[4:0] writeregW;
+	wire forwardaD,forwardbD;
     regfile regfile(
 	.clk(clk),
 	.we3(regwriteW),               
@@ -170,6 +173,7 @@ module datapath(
 	wire zeroE;
 	wire[31:0] aluresultE,srcbE;
 	wire[4:0] writeregE;
+	wire[1:0] forwardaE,forwardbE;
 
 	mux3 #(32) srcaE_mux(
 	.d0(rd1E),
@@ -281,31 +285,35 @@ module datapath(
     );
 	
     // hazard unit
-    wire forwardaD,forwardbD,forwardaE,forwardbE,stallF,stallD;
+    wire stallF,stallD;
 
-	hazard_unit hazard_unit(
+    hazard_unit hazard_unit(
+	//IF
+	.stallF(stallF),
+	//ID
+	.stallD(stallD),
+	.forwardaD(forwardaD),
+	.forwardbD(forwardbD),
+	.branchD(branchD),
 	.rsD(instrD[25:21]),
 	.rtD(instrD[21:16]),
+	//EX
+	.flushE(flushE),
+	.forwardaE(forwardaE),
+	.forwardbE(forwardbE),
 	.rsE(rsE),
 	.rtE(rtE),
 	.writeregE(writeregE),
-	.writeregM(writeregM),
-	.writeregW(writeregW),
 	.memtoregE(memtoregE),
-    .regwriteM(regwriteM),
-	.regwriteW(regwriteW),
-	.branchD(branchD),
 	.regwriteE(regwriteE),
+	//MEM
+	.writeregM(writeregM),
+	.regwriteM(regwriteM),
 	.memtoregM(memtoregM),
-	.forwardaD(forwardaD),
-	.forwardbD(forwardbD),
-    .forwardaE(forwardaE),
-	.forwardbE(forwardbE),
-	.stallF(stallF),
-	.stallD(stallD),
-	.flushE(flushE)
+	//EX
+	.writeregW(writeregW),
+	.regwriteW(regwriteW)
     ); 
-
 	
 
 

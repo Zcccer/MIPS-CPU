@@ -12,7 +12,7 @@ module regfile(
 
 	reg [31:0] rf[31:0];
 
-	always @(posedge clk) begin     //Regfiles are written along the descending edge of the clock, always written first and then read.
+	always @(negedge clk) begin     //Regfiles are written along the descending edge of the clock, always written first and then read.
 		if(we3) begin               //This ensures that reads and writes in the same clock cycle do not result in a data hazzard.
 			 rf[wa3] <= wd3;
 		end
